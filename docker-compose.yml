@@ -1,0 +1,19 @@
+version: '3'
+services:
+  server:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      - SA_PASSWORD=root@1234
+      - ACCEPT_EULA=Y
+    ports:
+      - 127.0.0.1:1433:1433
+  tools:
+    image: mcr.microsoft.com/mssql-tools
+    volumes:
+      - ./tools/entrypoint.sh:/entrypoint.sh
+      - ./wait-for-it.sh:/wait-for-it.sh
+      - ./tools/LA300.sql:/seeds/LA300.sql
+    environment:
+      - SA_PASSWORD=root@1234
+    entrypoint: ["./wait-for-it.sh", "server:1433", "--"]
+    command: ["./entrypoint.sh"]
